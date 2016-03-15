@@ -20,6 +20,3 @@ cur.execute('DROP TABLE temp_stu_info')
 # for eachStu in cur.fetchall():
 #     print(eachStu)
 
-cur.close()
-conn.commit()
-conn.close()
