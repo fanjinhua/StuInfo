@@ -1,8 +1,8 @@
-from tkinter import *
+from tkinter import messagebox, Frame, Tk, Label, StringVar, Entry, Button, X
 from database import *
 
 root = Tk()
-root.geometry('300x250')
+root.geometry('300x270')
 root.title('Database Modifier')
 
 frame = Frame(root, height=6, width=280)
@@ -33,10 +33,15 @@ e5.grid(row=4, column=1)
 
 def insert():
     print(e1.get(), e2.get(), e3.get(), e4.get(), e5.get())
-    cur.execute('INSERT INTO stu_info VALUES("%s", "%s", "%s", "%s", "%s"' %
-                (e1.get(), e2.get(), e3.get(), e4.get(), e5.get()))
+    try:
+        with cur:
+            cur.execute('INSERT INTO stu_info VALUES("%s", "%s", "%s", "%s", "%s"' %
+                        (e1.get(), e2.get(), e3.get(), e4.get(), e5.get()))
+    except sqlite3.IntegrityError:
+        print("Couldn't add the same one twice!")
 
 def delete():
+    messagebox.showinfo("Warnning!", "Are you sure to delete this info?")
     cur.execute('DELETE FROM stu_info WHERE 学号=?', [e1.get()])
 
 def find():
@@ -56,28 +61,24 @@ def clear():
     zy.set('')
     xy.set('')
 
-#def save():
- #   cur.execute('')
+def save():
+    cur.execute('UPDATE stu_info SET 姓名=?, 性别=?, 专业=?, 院系=? WHERE 学号=?',
+                [e2.get(), e3.get(), e4.get(), e5.get(), e1.get()])
 
-#text = Text(root, height=6, width=430)
-
-#text.insert(INSERT, "每行分别键入学号，姓名，性别，专业，院系：")
-
-#text.pack()
 
 insert_button = Button(root, text='Insert', activeforeground='white', activebackground='green', command=insert)
-delete_button = Button(root, text='Delete', activeforeground='white', activebackground='red', fg='red')
+delete_button = Button(root, text='Delete', activeforeground='white', activebackground='red', fg='red', command=delete)
 find_button = Button(root, text='Find', activeforeground='white', activebackground='green', command=find)
-save_button = Button(root, text='Save', activeforeground='white', activebackground='green')
+save_button = Button(root, text='Save', activeforeground='white', activebackground='green', command=save)
 clear_button = Button(root, text='Clear', activeforeground='white', activebackground='green', command=clear)
-#insert_button.bind("<Button-1>")
+
 insert_button.pack(fill=X, expand=True)
 delete_button.pack(fill=X, expand=True)
 find_button.pack(fill=X, expand=True)
 save_button.pack(fill=X, expand=True)
 clear_button.pack(fill=X, expand=True)
 
-mainloop()
+root.mainloop()
 
 cur.close()
 conn.commit()
