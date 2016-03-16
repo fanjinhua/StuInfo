@@ -1,34 +1,43 @@
-# class Stu:
-#     def __init__(self, num, name, sex, zy, xy):
-#         self.num = num
-#         self.name = name
-#         self.sex = sex
-#         self.zy = zy
-#         self.xy = xy
-#
-# list_stu = []
-#
-# stu = Stu('2015210177', '夏宇', '男', '通信与信息类', '通信与信息工程学院')
-# list_stu.append(stu)
-#
-# stu2 = Stu('2015210178', '鲁森', '男', '通信与信息类', '通信与信息工程学院')
-# list_stu.append(stu2)
-#
-#
-# list_stu.append(Stu('2015210179', '方法森', '男', '通信与信息类', '通信与信息工程学院'))
-# print(list_stu[0].num)
-# print(list_stu[1].num)
-# print(list_stu[2].num)
+import io
+# allows for image formats other than gif
+from PIL import Image, ImageTk
+try:
+    # Python2
+    import Tkinter as tk
+    from urllib2 import urlopen
+except ImportError:
+    # Python3
+    import tkinter as tk
+    from urllib.request import urlopen
 
-from urllib.request import urlopen
-from bs4 import BeautifulSoup
-from data_stu import class_links
+root = tk.Tk()
 
-url = 'http://jwzx.cqupt.edu.cn/'
+# find yourself a picture on an internet web page you like
+# (right click on the picture, under properties copy the address)
+#url = "http://www.google.com/intl/en/images/logo.gif"
+# or use image previously downloaded to tinypic.com
+#url = "http://i48.tinypic.com/w6sjn6.jpg"
+url = "http://i50.tinypic.com/34g8vo5.jpg"
 
+image_bytes = urlopen(url).read()
+# internal data file
+data_stream = io.BytesIO(image_bytes)
+# open as a PIL image object
+pil_image = Image.open(data_stream)
 
-html2 = urlopen(url + class_links[0])           # gb18030
-print(class_links[0])
-ins = BeautifulSoup(html2.read(), 'html.parser',
-                      from_encoding="gb18030").find('tr', onmouseover="this.bgColor='#E3E3E3';")
-print(ins)  # error
+# optionally show image info
+# get the size of the image
+w, h = pil_image.size
+# split off image file name
+fname = url.split('/')[-1]
+sf = "{} ({}x{})".format(fname, w, h)
+root.title(sf)
+
+# convert PIL image object to Tkinter PhotoImage object
+tk_image = ImageTk.PhotoImage(pil_image)
+
+# put the image on a typical widget
+label = tk.Label(root, image=tk_image, bg='brown')
+label.pack(padx=5, pady=5)
+
+root.mainloop()
